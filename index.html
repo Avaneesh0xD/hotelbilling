@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Order Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --veg-kitchen: #27ae60;
+            --nonveg-kitchen: #e74c3c;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --bg-light: #ffffff;
+            --bg-dark: #121212;
+            --card-light: #ffffff;
+            --card-dark: #1e1e1e;
+            --text-light: #333333;
+            --text-dark: #f0f0f0;
+            --border-light: #e0e0e0;
+            --border-dark: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode header {
+            background: #1a1a2e;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4361ee, #7209b7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        body.dark-mode .logo h1 {
+            background: linear-gradient(45deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .table-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0f5ff;
+            padding: 8px 15px;
+            border-radius: 50px;
+        }
+
+        body.dark-mode .table-selector {
+            background: #1e2a3a;
+        }
+
+        .table-selector label {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .table-selector select {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        body.dark-mode .table-selector select {
+            border: 1px solid var(--border-dark);
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .theme-toggle {
+            background: #f0f5ff;
+            border: none;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: #1e2a3a;
+            color: #4cc9f0;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(20deg);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .menu-section {
+            background-color: var(--card-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .menu-section {
+            background-color: #1a1a2e;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .section-header {
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .veg-toggle {
+            display: flex;
+            gap: 5px;
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 50px;
+        }
+
+        body.dark-mode .veg-toggle {
+            background-color: #2a2a2a;
+        }
+
+        .veg-toggle button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            background: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .veg-toggle button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .menu-categories {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .menu-category {
+            margin-bottom: 30px;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background-color: var(--bg-light);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .menu-item {
+            background-color: #1e1e2e;
+            border: 1px solid #2a2a3a;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .menu-item.veg::after {
+            background-color: #27ae60;
+        }
+
+        .menu-item.non-veg::after {
+            background-color: #e74c3c;
+        }
+
+        .item-id {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        body.dark-mode .item-id {
+            color: #aaa;
+        }
+
+        .item-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .item-price {
+            color: var(--primary);
+            font-weight: 800;
+            margin-top: auto;
+            font-size: 18px;
+        }
+
+        .order-section {
+            background-color: var(--card-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+        }
+
+        body.dark-mode .order-section {
+            background-color: #1a1a2e;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .order-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .order-header span {
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 700;
+        }
+
+        .order-items {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 15px;
+        }
+
+        body.dark-mode .order-items {
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #f9f9ff;
+            transition: transform 0.2s;
+        }
+
+        body.dark-mode .order-item {
+            background: #1e1e3a;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .item-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .veg-type {
+            background: #27ae60;
+            color: white;
+        }
+
+        .nonveg-type {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .quantity-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .item-price-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .item-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .kitchen-selector {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .kitchen-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background-color: #f0f0f0;
+            color: var(--text-light);
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        body.dark-mode .kitchen-btn {
+            background-color: #2a2a3a;
+            color: var(--text-dark);
+        }
+
+        .kitchen-btn i {
+            font-size: 20px;
+        }
+
+        .kitchen-btn.active {
+            color: white;
+        }
+
+        #vegKitchenBtn.active {
+            background-color: var(--veg-kitchen);
+        }
+
+        #nonVegKitchenBtn.active {
+            background-color: var(--nonveg-kitchen);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .save-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .bill-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .bill-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .bill-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .bill-content {
+            background-color: var(--card-light);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .bill-content {
+            background-color: #1a1a2e;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: transform 0.3s;
+        }
+
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+
+        body.dark-mode .close-modal {
+            color: var(--text-dark);
+        }
+
+        .bill-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--border-light);
+        }
+
+        body.dark-mode .bill-header {
+            border-bottom: 2px dashed #2a2a3a;
+        }
+
+        .bill-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .bill-details {
+            margin-bottom: 25px;
+        }
+
+        .bill-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        body.dark-mode .bill-item {
+            border-bottom: 1px dashed #2a2a3a;
+        }
+
+        .bill-item .item-name {
+            flex: 2;
+        }
+
+        .bill-item .item-price {
+            flex: 1;
+            text-align: right;
+        }
+
+        .bill-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            margin-top: 15px;
+            font-size: 22px;
+            font-weight: 800;
+            border-top: 3px double var(--border-light);
+        }
+
+        body.dark-mode .bill-total {
+            border-top: 3px double #2a2a3a;
+        }
+
+        .tip-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px 0;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .tip-section {
+            border-top: 1px solid #2a2a3a;
+            border-bottom: 1px solid #2a2a3a;
+        }
+
+        .tip-section h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            max-width: 200px;
+            margin: 20px auto;
+        }
+
+        body.dark-mode #qrcode {
+            background: #2a2a3a;
+        }
+
+        .empty-order {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-order i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 18px 30px;
+            border-radius: 12px;
+            background-color: var(--success);
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            transform: translateX(150%);
+            transition: transform 0.4s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            font-size: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-section,
+            .order-section {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-concierge-bell"></i>
+                <h1>Deluxe Hotel Order System</h1>
+            </div>
+            <div class="controls">
+                <div class="table-selector">
+                    <label for="table">Table:</label>
+                    <select id="table">
+                        <option value="1">Table 1</option>
+                        <option value="2">Table 2</option>
+                        <option value="3">Table 3</option>
+                        <option value="4">Table 4</option>
+                        <option value="5">Table 5</option>
+                        <option value="6">Table 6</option>
+                        <option value="7">Table 7</option>
+                        <option value="8">Table 8</option>
+                    </select>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <div class="menu-section">
+                <div class="section-header">
+                    <h2>Restaurant Menu</h2>
+                    <div class="veg-toggle">
+                        <button class="active" id="vegBtn">Veg</button>
+                        <button id="nonVegBtn">Non-Veg</button>
+                    </div>
+                </div>
+                <div class="menu-categories" id="menuCategories">
+                    <!-- Menu categories will be populated by JS -->
+                </div>
+            </div>
+
+            <div class="order-section">
+                <div class="order-header">
+                    <h2>Order for <span id="currentTable">Table 1</span></h2>
+                </div>
+
+                <div class="order-items" id="orderItems">
+                    <!-- Order items will be populated by JS -->
+                </div>
+
+                <div class="kitchen-selector">
+                    <button class="kitchen-btn" id="vegKitchenBtn">
+                        <i class="fas fa-leaf"></i> Veg Kitchen
+                    </button>
+                    <button class="kitchen-btn" id="nonVegKitchenBtn">
+                        <i class="fas fa-drumstick-bite"></i> Non-Veg Kitchen
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn save-btn" id="saveOrderBtn">
+                        <i class="fas fa-save"></i> Save Order
+                    </button>
+                    <button class="action-btn bill-btn" id="generateBillBtn">
+                        <i class="fas fa-file-invoice"></i> Generate Bill
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bill-modal" id="billModal">
+        <div class="bill-content">
+            <button class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="bill-header">
+                <h2>Deluxe Hotel</h2>
+                <p>Invoice for <span id="billTable">Table 1</span></p>
+                <p id="billDate"></p>
+            </div>
+
+            <div class="bill-details" id="billDetails">
+                <!-- Bill details will be populated by JS -->
+            </div>
+
+            <div class="bill-total">
+                <span>Total:</span>
+                <span id="billTotal">₹0.00</span>
+            </div>
+
+            <div class="tip-section">
+                <h3>Enjoyed your meal? Leave a tip!</h3>
+                <div id="qrcode"></div>
+                <p>Scan the QR code to tip your server</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Order saved successfully!</span>
+    </div>
+
+    <script>
+        // Enhanced Menu Data with roti options
+        const menuData = {
+            food: [
+                { id: 101, name: "Paneer Tikka Masala", price: 280, type: "veg" },
+                { id: 102, name: "Butter Chicken", price: 350, type: "non-veg" },
+                { id: 103, name: "Dal Makhani", price: 220, type: "veg" },
+                { id: 104, name: "Chicken Biryani", price: 320, type: "non-veg" },
+                { id: 105, name: "Veg Biryani", price: 240, type: "veg" },
+                { id: 106, name: "Palak Paneer", price: 260, type: "veg" },
+                { id: 107, name: "Fish Curry", price: 380, type: "non-veg" },
+                { id: 108, name: "Chana Masala", price: 200, type: "veg" },
+                { id: 109, name: "Mutton Rogan Josh", price: 420, type: "non-veg" },
+                { id: 110, name: "Malai Kofta", price: 270, type: "veg" },
+                { id: 111, name: "Tandoori Chicken", price: 340, type: "non-veg" },
+                { id: 112, name: "Vegetable Jalfrezi", price: 230, type: "veg" },
+                // Added roti options
+                { id: 113, name: "Butter Roti", price: 30, type: "veg" },
+                { id: 114, name: "Garlic Naan", price: 50, type: "veg" },
+                { id: 115, name: "Tandoori Roti", price: 25, type: "veg" },
+                { id: 116, name: "Butter Naan", price: 45, type: "veg" },
+                { id: 117, name: "Lachha Paratha", price: 40, type: "veg" }
+            ],
+            drinks: [
+                { id: 201, name: "Mango Lassi", price: 120, type: "veg" },
+                { id: 202, name: "Masala Chai", price: 80, type: "veg" },
+                { id: 203, name: "Fresh Lime Soda", price: 90, type: "veg" },
+                { id: 204, name: "Mineral Water", price: 50, type: "veg" },
+                { id: 205, name: "Fresh Juice", price: 150, type: "veg" },
+                { id: 206, name: "Iced Tea", price: 110, type: "veg" },
+                { id: 207, name: "Cold Coffee", price: 140, type: "veg" }
+            ],
+            snacks: [
+                { id: 301, name: "Vegetable Samosa", price: 100, type: "veg" },
+                { id: 302, name: "Chicken Tikka", price: 180, type: "non-veg" },
+                { id: 303, name: "Paneer Pakora", price: 160, type: "veg" },
+                { id: 304, name: "French Fries", price: 130, type: "veg" },
+                { id: 305, name: "Chicken Wings", price: 220, type: "non-veg" },
+                { id: 306, name: "Spring Rolls", price: 140, type: "veg" },
+                { id: 307, name: "Paneer Tikka", price: 190, type: "veg" }
+            ]
+        };
+
+        // Application state
+        const state = {
+            currentTable: 1,
+            currentKitchen: "veg",
+            showVeg: true,
+            orders: {},
+            currentOrder: []
+        };
+
+        // DOM Elements
+        const elements = {
+            tableSelect: document.getElementById('table'),
+            currentTableDisplay: document.getElementById('currentTable'),
+            vegBtn: document.getElementById('vegBtn'),
+            nonVegBtn: document.getElementById('nonVegBtn'),
+            menuCategoriesContainer: document.getElementById('menuCategories'),
+            orderItemsContainer: document.getElementById('orderItems'),
+            vegKitchenBtn: document.getElementById('vegKitchenBtn'),
+            nonVegKitchenBtn: document.getElementById('nonVegKitchenBtn'),
+            saveOrderBtn: document.getElementById('saveOrderBtn'),
+            generateBillBtn: document.getElementById('generateBillBtn'),
+            billModal: document.getElementById('billModal'),
+            closeModal: document.getElementById('closeModal'),
+            billTableDisplay: document.getElementById('billTable'),
+            billDateDisplay: document.getElementById('billDate'),
+            billDetails: document.getElementById('billDetails'),
+            billTotal: document.getElementById('billTotal'),
+            qrcode: document.getElementById('qrcode'),
+            themeToggle: document.getElementById('themeToggle'),
+            notification: document.getElementById('notification')
+        };
+
+        // Initialize the application
+        function init() {
+            // Event listeners
+            elements.tableSelect.addEventListener('change', handleTableChange);
+            elements.vegBtn.addEventListener('click', () => toggleMenuType(true));
+            elements.nonVegBtn.addEventListener('click', () => toggleMenuType(false));
+            elements.vegKitchenBtn.addEventListener('click', () => setKitchen('veg'));
+            elements.nonVegKitchenBtn.addEventListener('click', () => setKitchen('non-veg'));
+            elements.saveOrderBtn.addEventListener('click', saveOrder);
+            elements.generateBillBtn.addEventListener('click', generateBill);
+            elements.closeModal.addEventListener('click', closeBillModal);
+            elements.themeToggle.addEventListener('click', toggleTheme);
+
+            // Initialize menu and order
+            renderMenu();
+            renderOrder();
+
+            // Set default kitchen
+            setKitchen('veg');
+
+            // Load any saved orders
+            loadSavedOrders();
+        }
+
+        // Handle table change
+        function handleTableChange() {
+            // Save current order before switching
+            saveCurrentOrder();
+
+            state.currentTable = parseInt(elements.tableSelect.value);
+            elements.currentTableDisplay.textContent = `Table ${state.currentTable}`;
+
+            // Load order for the new table
+            loadOrderForTable();
+            renderOrder();
+        }
+
+        // Toggle between veg and non-veg menu
+        function toggleMenuType(showVeg) {
+            state.showVeg = showVeg;
+            elements.vegBtn.classList.toggle('active', showVeg);
+            elements.nonVegBtn.classList.toggle('active', !showVeg);
+            renderMenu();
+        }
+
+        // Set kitchen for order placement with colors
+        function setKitchen(kitchen) {
+            state.currentKitchen = kitchen;
+
+            if (kitchen === 'veg') {
+                elements.vegKitchenBtn.classList.add('active');
+                elements.nonVegKitchenBtn.classList.remove('active');
+            } else {
+                elements.nonVegKitchenBtn.classList.add('active');
+                elements.vegKitchenBtn.classList.remove('active');
+            }
+        }
+
+        // Render menu items organized by category
+        function renderMenu() {
+            elements.menuCategoriesContainer.innerHTML = '';
+
+            // Add each category
+            const categories = ['food', 'drinks', 'snacks'];
+
+            categories.forEach(category => {
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = 'menu-category';
+
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                categoryContainer.appendChild(categoryTitle);
+
+                const menuItemsContainer = document.createElement('div');
+                menuItemsContainer.className = 'menu-items';
+
+                menuData[category].forEach(item => {
+                    // Skip items that don't match the current filter
+                    if (state.showVeg && item.type !== 'veg') return;
+                    if (!state.showVeg && item.type === 'veg') return;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = `menu-item ${item.type === 'veg' ? 'veg' : 'non-veg'}`;
+                    itemElement.innerHTML = `
+                        <div class="item-id">#${item.id}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">₹${item.price}</div>
+                    `;
+
+                    itemElement.addEventListener('click', () => addToOrder(item));
+                    menuItemsContainer.appendChild(itemElement);
+                });
+
+                categoryContainer.appendChild(menuItemsContainer);
+                elements.menuCategoriesContainer.appendChild(categoryContainer);
+            });
+        }
+
+        // Add item to order
+        function addToOrder(item) {
+            const existingItem = state.currentOrder.find(i => i.id === item.id);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                state.currentOrder.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    type: item.type,
+                    quantity: 1
+                });
+            }
+
+            renderOrder();
+        }
+
+        // Render order items
+        function renderOrder() {
+            if (state.currentOrder.length === 0) {
+                elements.orderItemsContainer.innerHTML = `
+                    <div class="empty-order">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>No items added to order</p>
+                        <p>Click on menu items to add them</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.orderItemsContainer.innerHTML = '';
+
+            state.currentOrder.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-item';
+                itemElement.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name-row">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-type ${item.type === 'veg' ? 'veg-type' : 'nonveg-type'}">${item.type === 'veg' ? 'VEG' : 'NON-VEG'}</div>
+                        </div>
+                        <div class="item-quantity">
+                            <button class="quantity-btn" ${item.quantity <= 1 ? 'disabled' : ''} data-index="${index}" data-action="decrease">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn" data-index="${index}" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    <div class="item-price-row">
+                        <div class="item-price">₹${item.price * item.quantity}</div>
+                        <button class="delete-btn" data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                elements.orderItemsContainer.appendChild(itemElement);
+            });
+
+            // Add event listeners for quantity buttons
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', handleQuantityChange);
+            });
+
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', handleDeleteItem);
+            });
+        }
+
+        // Handle quantity changes
+        function handleQuantityChange(e) {
+            const index = parseInt(e.target.dataset.index);
+            const action = e.target.dataset.action;
+
+            if (action === 'increase') {
+                state.currentOrder[index].quantity++;
+            } else if (action === 'decrease') {
+                if (state.currentOrder[index].quantity > 1) {
+                    state.currentOrder[index].quantity--;
+                }
+            }
+
+            renderOrder();
+        }
+
+        // Handle item deletion
+        function handleDeleteItem(e) {
+            const index = parseInt(e.target.closest('.delete-btn').dataset.index);
+            state.currentOrder.splice(index, 1);
+            renderOrder();
+        }
+
+        // Save order to state
+        function saveOrder() {
+            if (state.currentOrder.length === 0) {
+                showNotification('Please add items to the order before saving');
+                return;
+            }
+
+            // Save to orders object
+            state.orders[state.currentTable] = [...state.currentOrder];
+
+            // Show notification
+            showNotification('Order saved successfully!');
+
+            // For demo purposes, log the order
+            console.log(`Order saved for Table ${state.currentTable}:`, state.currentOrder);
+            console.log(`Order placed to ${state.currentKitchen} kitchen`);
+        }
+
+        // Generate bill
+        function generateBill() {
+            if (state.currentOrder.length === 0) {
+                showNotification('Please add items to the order before generating bill');
+                return;
+            }
+
+            // Set bill header info
+            elements.billTableDisplay.textContent = `Table ${state.currentTable}`;
+
+            const now = new Date();
+            elements.billDateDisplay.textContent = now.toLocaleString();
+
+            // Generate bill items
+            elements.billDetails.innerHTML = '';
+            let subtotal = 0;
+
+            state.currentOrder.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+
+                const billItem = document.createElement('div');
+                billItem.className = 'bill-item';
+                billItem.innerHTML = `
+                    <div class="item-name">${item.quantity} x ${item.name}</div>
+                    <div class="item-price">₹${itemTotal}</div>
+                `;
+                elements.billDetails.appendChild(billItem);
+            });
+
+            // Calculate tax (10%)
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
+
+            // Add tax and total
+            const taxItem = document.createElement('div');
+            taxItem.className = 'bill-item';
+            taxItem.innerHTML = `
+                <div class="item-name">Tax (10%)</div>
+                <div class="item-price">₹${tax.toFixed(2)}</div>
+            `;
+            elements.billDetails.appendChild(taxItem);
+
+            // Add subtotal
+            const subtotalItem = document.createElement('div');
+            subtotalItem.className = 'bill-item';
+            subtotalItem.innerHTML = `
+                <div class="item-name">Subtotal</div>
+                <div class="item-price">₹${subtotal.toFixed(2)}</div>
+            `;
+            elements.billDetails.appendChild(subtotalItem);
+
+            elements.billTotal.textContent = `₹${total.toFixed(2)}`;
+
+            // Generate QR code for tipping
+            elements.qrcode.innerHTML = '';
+            try {
+                new QRCode(elements.qrcode, {
+                    text: `Leave a tip for Table ${state.currentTable}`,
+                    width: 150,
+                    height: 150,
+                    colorDark: document.body.classList.contains('dark-mode') ? "#ffffff" : "#000000",
+                    colorLight: document.body.classList.contains('dark-mode') ? "#2a2a3a" : "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                elements.qrcode.innerHTML = '<p>Scan to tip: Table ' + state.currentTable + '</p>';
+                console.error("QR code generation error:", e);
+            }
+
+            // Show the modal
+            elements.billModal.classList.add('active');
+        }
+
+        // Close bill modal
+        function closeBillModal() {
+            elements.billModal.classList.remove('active');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            elements.notification.querySelector('span').textContent = message;
+            elements.notification.classList.add('show');
+
+            setTimeout(() => {
+                elements.notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Toggle theme (light/dark mode)
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = elements.themeToggle.querySelector('i');
+
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Save current order before switching tables
+        function saveCurrentOrder() {
+            if (state.currentOrder.length > 0) {
+                state.orders[state.currentTable] = [...state.currentOrder];
+            }
+        }
+
+        // Load order for current table
+        function loadOrderForTable() {
+            state.currentOrder = state.orders[state.currentTable] || [];
+        }
+
+        // Load any saved orders (for demo, just initialize)
+        function loadSavedOrders() {
+            // In a real app, this would load from storage
+            state.orders = {};
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>
